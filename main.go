@@ -10,7 +10,8 @@ import (
 func main() {
 
 	var counter int
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	var version = "1.0"
+	http.HandleFunc("/count/", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := net.Dial("udp", r.RemoteAddr)
 		if err != nil {
 			log.Fatalf("could not determine local IP address: %v", err)
@@ -24,7 +25,11 @@ func main() {
 		}
 
 		counter++
-		fmt.Fprintf(w, "Hitting backend %s (count %d)\n", localIP, counter)
+		fmt.Fprintf(w, "Hitting backend %s (count %d, version %s)\n", localIP, counter, version)
+	})
+
+	http.HandleFunc("/health/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "OK\n")
 	})
 
 	log.Fatal(http.ListenAndServe(":5000", nil))
